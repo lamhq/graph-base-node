@@ -3,10 +3,6 @@ const app = express()
 const { notFoundExc } = require('./modules/common/helpers')
 const logger = require('./modules/common/log')
 
-// enable CORS
-var cors = require('cors')
-app.use(cors())
-
 // integrate sentry with raven-node
 const sentry = require('./modules/common/sentry')
 sentry.install()
