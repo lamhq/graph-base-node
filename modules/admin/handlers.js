@@ -16,7 +16,8 @@ async function login(req, res, next) {
 
     var user = await User.findOne({ username: data.loginId })
     if (!user || !user.checkPassword(data.password)) {
-      return res.status(400).json(validationExc('Invalid login information.'))
+      return res.status(400).json(validationExc('Invalid login information.',
+        { password: ['Incorrect username or password'] }))
     }
 
     res.json({
@@ -49,7 +50,7 @@ async function updateProfile(req, res, next) {
     if (user) {
       let errors = validateProfileData(data, user)
       if (errors) {
-        next(validationExc('Invalid Data', errors))
+        next(validationExc('Please check your form input', errors))
       } else {
         user.email = data.email
         user.username = data.username
