@@ -1,8 +1,8 @@
 # Dependency directories
 node_modules/
 
-# MongoDB data directory
-mongo/
-
 # dotenv environment variables file
 .env
+
+# MongoDB data directory
+mongo/

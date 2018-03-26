@@ -2,7 +2,6 @@
   "watch": [".", ".env"],
   "ignore": [
     ".git",
-    "node_modules",
-    "dist"
+    "node_modules"
   ]
 }
