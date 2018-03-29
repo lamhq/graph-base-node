@@ -1,11 +1,31 @@
 const Post = require('../models/post')
 const { validationExc, notFoundExc } = require('../../common/helpers')
-const { validatePost } = require('./helpers')
+const { validatePost, getQueryData } = require('./helpers')
 
 async function getPosts(req, res, next) {
   try {
     var posts = await Post.find().sort({ updatedAt: -1})
     res.json(posts)
+
+    // var query = getQueryData(req.query);
+    // var total = 0;
+    // Post.count(query.conditions)
+    // .then(function(data){
+    //   total = data;
+    //   return Activity.find(search.filter)
+    //     .sort('-time')
+    //     .skip(search.skip)
+    //     .limit(search.limit);
+    // })
+    // .then(function(data){
+    //   res
+    //     .set('X-Pagination-Page-Count', Math.ceil(total/search.limit))
+    //     .set('X-Pagination-Current-Page', search.page)
+    //     .set('X-Pagination-Per-Page', search.limit)
+    //     .set('X-Pagination-Total-Count', total)
+    //     .set('Access-Control-Expose-Headers', 'X-Pagination-Page-Count, X-Pagination-Current-Page, X-Pagination-Per-Page, X-Pagination-Total-Count')
+    //     .json(data);
+    // }).catch(next);    
   } catch (err) {
     next(err)
   }
