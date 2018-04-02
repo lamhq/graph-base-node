@@ -6,17 +6,20 @@ const {
   verifyToken,
 } = require('../../common/helpers');
 const {
-  validateLoginForm,
+  validateLoginData,
+  validateRegistrationData,
   validateProfileData,
-  validateForgotPwdForm,
+  validateForgotPwdData,
+  validateResetPwdData,
   sendMailRequestResetPwd,
-  validateResetPwdForm,
+  sendMailRegistrationToUser,
+  sendMailRegistrationToAdmin,
 } = require('./helpers');
 
 async function login(req, res, next) {
   try {
     var data = req.body
-    var errors = validateLoginForm(data)
+    var errors = validateLoginData(data)
     if (errors) {
       return next(validationExc('Please correct your input.', errors))
     }
@@ -74,12 +77,12 @@ async function updateProfile(req, res, next) {
   }
 }
 
-const verifyAdminToken = createMiddleware('jwtAdmin', jwtPayload => User.findById(jwtPayload.userId))
+const verifyUserToken = createMiddleware('jwtAdmin', jwtPayload => User.findById(jwtPayload.userId))
 
 async function requestResetPassword(req, res, next) {
   try {
     var data = req.body
-    var errors = await validateForgotPwdForm(data)
+    var errors = await validateForgotPwdData(data)
     console.log(errors)
     if (errors) {
       return next(validationExc('Please correct your input.', errors))
@@ -98,7 +101,7 @@ async function requestResetPassword(req, res, next) {
 async function resetPassword(req, res, next) {
   try {
     var data = req.body
-    var errors = await validateResetPwdForm(data)
+    var errors = await validateResetPwdData(data)
     console.log(errors)
     if (errors) {
       return next(validationExc('Please correct your input.', errors))
@@ -118,11 +121,36 @@ async function resetPassword(req, res, next) {
   }
 }
 
+// user register
+async function register(req, res, next) {
+  try {
+    const data = req.body;
+    const errors = await validateRegistrationData(data);
+    if (errors) {
+      return next(validationExc('Please correct your input.', errors));
+    }
+
+    const user = new User({
+      ...data,
+      status: User.STATUS_ACTIVE,
+    });
+    await user.save();
+    // sendMailRegistrationToUser(user);
+    // sendMailRegistrationToAdmin(user);
+
+    const { __v, password, ...safeData } = user.toObject();
+    return res.json(safeData);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 module.exports = {
   login,
+  register,
   getProfile,
   updateProfile,
-  verifyAdminToken,
+  verifyUserToken,
   requestResetPassword,
   resetPassword,
 };

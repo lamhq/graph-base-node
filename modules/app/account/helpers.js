@@ -75,7 +75,7 @@ async function checkEmailExist(value) {
 }
 
 // validate required fields on forgot password form
-async function validateForgotPwdForm(data) {
+async function validateForgotPwdData(data) {
   validate.Promise = global.Promise;
   validate.validators.emailExists = checkEmailExist;
   const rules = {
@@ -111,7 +111,7 @@ async function validateUserToken(value) {
 }
 
 // validate form to update new password
-async function validateResetPwdForm(data) {
+async function validateResetPwdData(data) {
   validate.Promise = global.Promise
   validate.validators.userToken = validateUserToken
   var rules = {
@@ -158,10 +158,75 @@ function sendMailRequestResetPwd(user) {
   return sendMail(message);
 }
 
+async function checkEmailNotExists(value) {
+  const user = await User.findOne({
+    email: value,
+  });
+  return !user
+    ? Promise.resolve()
+    : Promise.resolve('is already registered.');
+}
+
+async function validateRegistrationData(data) {
+  validate.Promise = global.Promise;
+  validate.validators.emailNotExists = checkEmailNotExists;
+
+  let errors;
+  const constraints = {
+    username: {
+      presence: { allowEmpty: false },
+      length: { minimum: 3, maximum: 30 },
+      format: {
+        pattern: '[a-z0-9]+',
+        flags: 'i',
+        message: 'can only contain alphabet and numeric characters',
+      },
+      emailNotExists: true,
+    },
+    email: {
+      presence: { allowEmpty: false },
+      email: true,
+    },
+  };
+
+  try {
+    await validate.async(data, constraints, { format: 'grouped' });
+  } catch (err) {
+    errors = err;
+  }
+  return errors;
+}
+
+function sendMailRegistrationToUser(user) {
+  const q = querystring.stringify({
+    token: user.createToken('10m').value,
+  });
+  const link = `${config.webUrl}/admin/forgot-password?${q}`;
+  const message = {
+    from: `${config.appName} <${config.mail.autoEmail}>`,
+    to: `${user.email} <${user.email}>`,
+    subject: 'Password reset request',
+    templatePath: path.resolve(__dirname, 'email/reset-password.html'),
+    params: {
+      name: user.email,
+      link,
+    },
+  };
+
+  return sendMail(message);
+}
+
+function sendMailRegistrationToAdmin(user) {
+
+}
+
 module.exports = {
   validateLoginForm,
   validateProfileData,
-  validateForgotPwdForm,
+  validateForgotPwdData,
   sendMailRequestResetPwd,
-  validateResetPwdForm,
+  validateResetPwdData,
+  validateRegistrationData,
+  sendMailRegistrationToUser,
+  sendMailRegistrationToAdmin,
 };

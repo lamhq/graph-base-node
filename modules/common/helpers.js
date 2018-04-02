@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt-nodejs')
 const ms = require('ms')
 const mongoose = require('mongoose')
 const config = require('../../config')
+const validate = require('validate.js')
 
 function notFoundExc(message) {
   return {
@@ -83,16 +84,42 @@ function verifyToken(token) {
  * @param {Mixed} defVal default value when the result is undefined
  */
 function getObjectValue(obj, path, defVal = undefined) {
-  try {
-    for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
-      obj = obj[path[i]]
-      if (obj === undefined)
-        return defVal
+  var result = validate.getDeepObjectValue(obj, keyPath)
+  return result ? result : defVal
+}
+
+function filterObjectKeys(obj, allowedKeys = []) {
+  var result = {}
+  allowedKeys.forEach(key => {
+    if (obj[key]) {
+      result[key] = obj[key]
     }
-    return obj
-  } catch (error) {
-    return defVal
+  })
+  return result
+}
+
+function validateFileData(data) {
+  var rules = {
+    url: {
+      presence: { allowEmpty: false },
+    },
+    filename: {
+      presence: { allowEmpty: false },
+    },
+    type: {
+      presence: { allowEmpty: false },
+    },
+    bucket: {
+      presence: { allowEmpty: false },
+    },
+    region: {
+      presence: { allowEmpty: false },
+    },
+    key: {
+      presence: { allowEmpty: false },
+    },
   }
+  return validate(data, rules, { format: 'grouped' })
 }
 
 module.exports = {

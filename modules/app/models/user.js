@@ -11,6 +11,11 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   status: { type: String, required: true },
+  profile: {
+    firstname: { type: String },
+    lastname: { type: String },
+    phone: { type: String },
+  },
 }, { timestamps: true });
 
 // user method for setting password

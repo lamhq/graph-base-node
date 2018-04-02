@@ -3,19 +3,25 @@ const express = require('express');
 
 const router = express.Router();
 
-router.route('/account/session')
-  .post(handlers.login);
+// user login
+router.post('/account/sessions', handlers.login);
 
-// send reset password email
-router.post('/account/password-reset/request', handlers.requestResetPassword);
+// user register
+router.post('/account/registrations', handlers.register);
+
+// send reset password link to email
+router.post('/account/password-reset/requests', handlers.requestResetPassword);
 
 // update account's password
 router.put('/account/password', handlers.resetPassword);
 
-router.use(/^\/account.*?/, handlers.verifyAdminToken);
+// all routers after this middleware require an access token
+router.use(/^\/account.*?/, handlers.verifyUserToken);
 
 router.route('/account/profile')
+  // get account's data
   .get(handlers.getProfile)
+  // update account's data
   .put(handlers.updateProfile);
 
 module.exports = router;
