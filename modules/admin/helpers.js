@@ -4,6 +4,7 @@ const path = require('path');
 const User = require('../common/models/user');
 const config = require('../../config');
 const { sendMail } = require('../common/mail');
+const { verifyToken } = require('../common/helpers')
 
 function validateLoginForm(data) {
   var rules = {
@@ -95,6 +96,21 @@ async function validateForgotPwdForm(data) {
   return errors;
 }
 
+// validate.js custom async validate function to validate user is valid or not
+async function validateUserToken(value) {
+  var decoded = verifyToken(value)
+  if (!decoded) return Promise.resolve('invalid')
+
+  var user = await User.findOne({
+    _id: decoded.userId,
+    userType: User.TYPE_ADMIN,
+    status: User.STATUS_ACTIVE
+  })
+  return user
+    ? Promise.resolve()
+    : Promise.resolve('is legal but the account does not exist.')
+}
+
 // validate form to update new password
 async function validateResetPwdForm(data) {
   validate.Promise = global.Promise
@@ -121,21 +137,6 @@ async function validateResetPwdForm(data) {
     errors = err
   }
   return errors
-}
-
-// validate.js custom async validate function to validate user is valid or not
-async function validateUserToken(value) {
-  var decoded = verifyToken(value)
-  if (!decoded) return Promise.resolve('invalid')
-
-  var user = await User.findOne({
-    _id: decoded.userId,
-    userType: User.TYPE_ADMIN,
-    status: User.STATUS_ACTIVE
-  })
-  return user
-    ? Promise.resolve()
-    : Promise.resolve('is legal but the account does not exist.')
 }
 
 // send email to check containe link to reset password

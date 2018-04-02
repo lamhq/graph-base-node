@@ -1,12 +1,18 @@
-const { request, expect, getApiToken } = require('./common');
+const {
+  request,
+  expect,
+  getApiToken,
+} = require('./common');
+const { createToken: createPasswordResetToken } = require('../modules/common/helpers');
 
-describe.only('POST /api/v1/admin/session', () => {
+// test api login
+describe('POST /api/v1/admin/session', () => {
   it('should return token when login success', async () => {
     await request
       .post('/api/v1/admin/session')
       .send({
-        loginId: 'demo',
-        password: 'demo',
+        loginId: 'demo@example.com',
+        password: '123123',
       })
       .expect('Content-Type', /json/)
       .expect(200)
@@ -18,6 +24,7 @@ describe.only('POST /api/v1/admin/session', () => {
   });
 });
 
+// test api get account information
 describe('GET /api/v1/admin/account', () => {
   it('should return profile data', async () => {
     const token = await getApiToken();
@@ -33,52 +40,50 @@ describe('GET /api/v1/admin/account', () => {
   });
 });
 
-describe('PUT /api/v1/admin/session', function () {
-  it('should return updated profile data', async function () {
-    var token = await getApiToken()
+// test api update account information
+describe('PUT /api/v1/admin/account', () => {
+  it('should return updated profile data', async () => {
+    const token = await getApiToken();
     await request
       .put('/api/v1/admin/account')
       .set('Authorization', `bearer ${token}`)
       .send({
-        'email': 'admin@m.mm',
-        'username': 'admin1',
+        email: 'admin@m.mm',
+        username: 'admin1',
       })
       .expect('Content-Type', /json/)
       .expect(200)
-      .expect(resp => {
-        var result = JSON.parse(resp.text)
-        expect(result).to.have.property('username')
-        expect(result.username).to.equal('admin1')
-      })
-  })
-})
+      .expect((resp) => {
+        const result = JSON.parse(resp.text);
+        expect(result).to.have.property('username');
+        expect(result.username).to.equal('admin1');
+      });
+  });
+});
 
-// test api: request reset password
-describe('POST /api/v1/admin/password-reset/request', function () {
-  this.timeout(10000);
-  it('should send email when request reset password', async function () {
-    var token = await getApiToken();
+// test api request reset password
+describe('POST /api/v1/admin/password-reset/request', () => {
+  it('should send email when request reset password', async () => {
     await request
       .post('/api/v1/admin/password-reset/request')
-      .set('Authorization', `bearer ${token}`)
       .send({
         email: 'demo@example.com',
       })
       .expect('Content-Type', /json/)
-      // .expect(200)
-      .expect(resp => {
-        var result = JSON.parse(resp.text)
-        console.log(result)
-      })
-  })
+      .expect(200)
+      .expect((resp) => {
+        const result = JSON.parse(resp.text);
+        expect(result).to.have.property('message');
+      });
+  });
 });
 
-// test api: reset password
-describe('PUT /api/v1/ci/admin/password', function () {
-  it('should update user\'s password with new password', function (done) {
-    var token = createToken({ _id: '59b39bcf538ff606c04d12db' }, '10m')
-    request
-      .put('/api/v1/ci/admin/password')
+// test api reset password
+describe('PUT /api/v1/admin/password', () => {
+  it('should update user\'s password with new password', async () => {
+    const token = createPasswordResetToken({ _id: '59b39bcf538ff606c04d12db' }, '10m');
+    await request
+      .put('/api/v1/admin/password')
       .send({
         token: token.value,
         password: '123123',
@@ -86,6 +91,9 @@ describe('PUT /api/v1/ci/admin/password', function () {
       })
       .expect('Content-Type', /json/)
       .expect(200)
-      .end(done)
-  })
+      .expect((resp) => {
+        const result = JSON.parse(resp.text);
+        expect(result).to.have.property('message');
+      });
+  });
 });

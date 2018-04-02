@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-var { encryptPassword, verifyPassword, createAccessToken } = require('../helpers')
+var { encryptPassword, verifyPassword, createToken } = require('../helpers')
 
 var userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -16,8 +16,8 @@ userSchema.methods.checkPassword = function (value) {
 }
 
 // create json web token present for this user
-userSchema.methods.createToken = function (duration='1h') {
-  return createAccessToken(this, duration)
+userSchema.methods.createToken = function (duration = '1h') {
+  return createToken(this, duration)
 }
 
 var User = mongoose.model('common.users', userSchema)

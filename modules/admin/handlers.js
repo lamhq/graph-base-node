@@ -3,6 +3,7 @@ const User = require('../common/models/user')
 const {
   validationExc,
   notFoundExc,
+  verifyToken,
 } = require('../common/helpers');
 const {
   validateLoginForm,
@@ -20,7 +21,7 @@ async function login(req, res, next) {
       return next(validationExc('Please correct your input.', errors))
     }
 
-    var user = await User.findOne({ username: data.loginId })
+    var user = await User.findOne({ email: data.loginId })
     if (!user || !user.checkPassword(data.password)) {
       return res.status(400).json(validationExc('Invalid login information.',
         { password: ['Incorrect username or password'] }))
@@ -98,6 +99,7 @@ async function resetPassword(req, res, next) {
   try {
     var data = req.body
     var errors = await validateResetPwdForm(data)
+    console.log(errors)
     if (errors) {
       return next(validationExc('Please correct your input.', errors))
     }

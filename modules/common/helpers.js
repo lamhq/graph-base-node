@@ -50,7 +50,12 @@ function verifyPassword(value, hash) {
   return bcrypt.compareSync(value, hash)
 }
 
-function createAccessToken(user, duration) {
+/**
+ * Create an access token for user
+ * @param {Object} user
+ * @param {String} duration
+ */
+function createToken(user, duration) {
   var expiredAt = new Date()
   expiredAt.setSeconds(expiredAt.getSeconds() + ms(duration) / 1000)
   var value = jwt.sign({ userId: user._id }, config.appSecret, { expiresIn: duration })
@@ -60,12 +65,12 @@ function createAccessToken(user, duration) {
   }
 }
 
-function verifyAccessToken(token) {
+function verifyToken(token) {
   var result = false
   try {
     result = jwt.verify(token, config.appSecret)
   } catch (err) {
-    throw new Error('Error while verifying access token')
+    logger.info('Validate access token failed.')
   }
   return result
 }
@@ -77,11 +82,11 @@ function verifyAccessToken(token) {
  * @param {String} path
  * @param {Mixed} defVal default value when the result is undefined
  */
-function getObjectValue(obj, path, defVal=undefined) {
+function getObjectValue(obj, path, defVal = undefined) {
   try {
     for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
       obj = obj[path[i]]
-      if (obj===undefined)
+      if (obj === undefined)
         return defVal
     }
     return obj
@@ -97,7 +102,7 @@ module.exports = {
   connectToDb,
   encryptPassword,
   verifyPassword,
-  createAccessToken,
-  verifyAccessToken,
-  getObjectValue
+  createToken,
+  verifyToken,
+  getObjectValue,
 }
