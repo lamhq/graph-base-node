@@ -1,5 +1,6 @@
 const mailer = require('nodemailer')
 const fs = require('fs')
+const validate = require('validate.js')
 const logger = require('./log')
 const config = require('../../config')
 
@@ -26,16 +27,7 @@ async function sendMail({ params, templatePath, ...message }) {
     }
 
     // replace params in mail template
-    if (params) {
-      for(let search in params) {
-        let repl = params[search]
-        message.html = message.html.replace(new RegExp(search, 'g'), repl)
-      }
-    }
-
-    if (process.env.NODE_ENV==='dev') {
-      message.to += ', dev <daibanglam@gmail.com>'
-    }
+    message.html = validate.format(message.html, params)
 
     // send the mail
     logger.info('Going to send mail with message:', message)
@@ -43,7 +35,7 @@ async function sendMail({ params, templatePath, ...message }) {
     var info = await transporter.sendMail(message)
 
     // Preview only available when sending through an Ethereal account
-    if (process.env.NODE_ENV==='dev') {
+    if (process.env.NODE_ENV === 'dev') {
       logger.info('Preview URL: %s', mailer.getTestMessageUrl(info))
     }
   } catch (error) {
@@ -66,7 +58,7 @@ async function sendMail({ params, templatePath, ...message }) {
  *     }
  *   }
  */
-async function sendTestMail(data=null) {
+async function sendTestMail(data = null) {
   let message = {
     from: 'Tester <tester@gmail.com>',
     to: 'Recipient <daibanglam@gmail.com>',

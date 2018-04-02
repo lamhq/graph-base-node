@@ -3,8 +3,14 @@ const User = require('../common/models/user')
 const {
   validationExc,
   notFoundExc,
-} = require('../common/helpers')
-const { validateLoginForm, validateProfileData } = require('./helpers')
+} = require('../common/helpers');
+const {
+  validateLoginForm,
+  validateProfileData,
+  validateForgotPwdForm,
+  sendMailRequestResetPwd,
+  validateResetPwdForm,
+} = require('./helpers');
 
 async function login(req, res, next) {
   try {
@@ -69,9 +75,53 @@ async function updateProfile(req, res, next) {
 
 const verifyAdminToken = createMiddleware('jwtAdmin', jwtPayload => User.findById(jwtPayload.userId))
 
+async function requestResetPassword(req, res, next) {
+  try {
+    var data = req.body
+    var errors = await validateForgotPwdForm(data)
+    console.log(errors)
+    if (errors) {
+      return next(validationExc('Please correct your input.', errors))
+    }
+
+    var user = await User.findOne({
+      email: data.email,
+    })
+    res.json({ message: 'Please check your email.' })
+    sendMailRequestResetPwd(user)
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    var data = req.body
+    var errors = await validateResetPwdForm(data)
+    if (errors) {
+      return next(validationExc('Please correct your input.', errors))
+    }
+
+    var decoded = verifyToken(data.token)
+    var user = await User.findOne({
+      _id: decoded.userId,
+      userType: User.TYPE_ADMIN,
+      status: User.STATUS_ACTIVE
+    })
+    user.setPassword(data.password)
+    await user.save()
+
+    res.json({ message: 'Password updated successfully.' })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   login,
   getProfile,
   updateProfile,
   verifyAdminToken,
-}
+  requestResetPassword,
+  resetPassword,
+};

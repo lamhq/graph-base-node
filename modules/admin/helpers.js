@@ -1,4 +1,9 @@
-const validate = require('validate.js')
+const validate = require('validate.js');
+const querystring = require('querystring');
+const path = require('path');
+const User = require('../common/models/user');
+const config = require('../../config');
+const { sendMail } = require('../common/mail');
 
 function validateLoginForm(data) {
   var rules = {
@@ -59,7 +64,104 @@ function validateProfileData(data, user) {
   return validate(data, rules)
 }
 
+async function checkEmailExist(value) {
+  var user = await User.findOne({
+    email: value,
+  })
+  return user
+    ? Promise.resolve()
+    : Promise.resolve('does not exist or account is not enabled')
+}
+
+// validate required fields on forgot password form
+async function validateForgotPwdForm(data) {
+  validate.Promise = global.Promise;
+  validate.validators.emailExists = checkEmailExist;
+  const rules = {
+    email: {
+      presence: { allowEmpty: false },
+      email: true,
+      emailExists: true,
+    },
+  };
+
+  let errors;
+  try {
+    await validate.async(data, rules, { format: 'grouped' });
+  } catch (err) {
+    errors = err;
+  }
+
+  return errors;
+}
+
+// validate form to update new password
+async function validateResetPwdForm(data) {
+  validate.Promise = global.Promise
+  validate.validators.userToken = validateUserToken
+  var rules = {
+    token: {
+      presence: { allowEmpty: false },
+      userToken: true
+    },
+    password: {
+      presence: { allowEmpty: false },
+      length: { minimum: 6, maximum: 30 }
+    },
+    verify: {
+      presence: { allowEmpty: false },
+      equality: 'password'
+    }
+  }
+
+  var errors
+  try {
+    await validate.async(data, rules, { format: 'grouped' })
+  } catch (err) {
+    errors = err
+  }
+  return errors
+}
+
+// validate.js custom async validate function to validate user is valid or not
+async function validateUserToken(value) {
+  var decoded = verifyToken(value)
+  if (!decoded) return Promise.resolve('invalid')
+
+  var user = await User.findOne({
+    _id: decoded.userId,
+    userType: User.TYPE_ADMIN,
+    status: User.STATUS_ACTIVE
+  })
+  return user
+    ? Promise.resolve()
+    : Promise.resolve('is legal but the account does not exist.')
+}
+
+// send email to check containe link to reset password
+function sendMailRequestResetPwd(user) {
+  const q = querystring.stringify({
+    token: user.createToken('10m').value,
+  });
+  const link = `${config.webUrl}/admin/forgot-password?${q}`;
+  const message = {
+    from: `${config.appName} <${config.mail.autoEmail}>`,
+    to: `${user.email} <${user.email}>`,
+    subject: 'Password reset request',
+    templatePath: path.resolve(__dirname, 'email/reset-password.html'),
+    params: {
+      name: user.email,
+      link,
+    },
+  };
+
+  return sendMail(message);
+}
+
 module.exports = {
   validateLoginForm,
   validateProfileData,
-}
+  validateForgotPwdForm,
+  sendMailRequestResetPwd,
+  validateResetPwdForm,
+};

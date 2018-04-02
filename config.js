@@ -1,11 +1,11 @@
-const path = require('path')
+const path = require('path');
 
-var config = {
+const config = {
   port: process.env.PORT || 3000,
   webUrl: process.env.WEB_URL,
   db: {
     uri: process.env.DB_URI,
-    debug: process.env.MONGOOSE_DEBUG==='true'
+    debug: process.env.MONGOOSE_DEBUG === 'true',
   },
   appName: 'React Blog',
   appSecret: 'react blog secret',
@@ -14,13 +14,13 @@ var config = {
   mail: {
     transport: {
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT),
+      port: parseInt(process.env.SMTP_PORT, 10),
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PWD,
       },
     },
-    autoEmail: 'noreply@careinterchange.com',
+    autoEmail: 'noreply@demo.com',
   },
   accessTokenLifeTime: '3h',
   s3Config: {
@@ -28,7 +28,7 @@ var config = {
     secretAccessKey: 'qeyoHvVarvSnaM+htgHpRcSMTQHOhxq7linx+Fs5',
     bucket: 'lamhq',
     region: 'ap-southeast-1',
-  }
-}
+  },
+};
 
-module.exports = config
+module.exports = config;
