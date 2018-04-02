@@ -6,3 +6,6 @@ node_modules/
 
 # MongoDB data directory
 mongo/
+
+# yarn error log
+yarn-error.log

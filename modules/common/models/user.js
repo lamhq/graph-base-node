@@ -1,26 +1,50 @@
-var mongoose = require('mongoose')
-var { encryptPassword, verifyPassword, createToken } = require('../helpers')
+const mongoose = require('mongoose');
+const passwordGenerator = require('generate-password');
+const {
+  encryptPassword,
+  verifyPassword,
+  createToken,
+} = require('../helpers');
 
-var userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-}, { timestamps: true })
+  status: { type: String, required: true },
+}, { timestamps: true });
 
-userSchema.methods.setPassword = function (value) {
-  this.password = encryptPassword(value)
-}
+// user method for setting password
+userSchema.methods.setPassword = function setPassword(value) {
+  this.password = encryptPassword(value);
+};
 
-userSchema.methods.checkPassword = function (value) {
-  return verifyPassword(value, this.password)
-}
+// user method for validating password
+userSchema.methods.checkPassword = function checkPassword(value) {
+  return verifyPassword(value, this.password);
+};
 
-// create json web token present for this user
-userSchema.methods.createToken = function (duration = '1h') {
-  return createToken(this, duration)
-}
+// set random password and return random generated password to send to user
+userSchema.methods.autoSetRandomPassword = function setRandomPassword(len = 10) {
+  const password = passwordGenerator.generate({
+    length: len,
+    numbers: true,
+  });
+  this.setPassword(password);
+  return password;
+};
 
-var User = mongoose.model('common.users', userSchema)
+// create json web token that present this user
+userSchema.methods.createToken = function createUserToken(duration = '1h') {
+  return createToken(this, duration);
+};
 
-module.exports = User
+// define mogoose model
+const User = mongoose.model('common.users', userSchema);
 
+// available user statuses
+User.STATUS_PENDING = 'Pending';
+User.STATUS_ACTIVE = 'Active';
+User.STATUS_INACTIVE = 'Inactive';
+User.STATUS_DECLINED = 'Declined';
+
+module.exports = User;
