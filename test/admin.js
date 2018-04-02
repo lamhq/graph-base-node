@@ -6,10 +6,10 @@ const {
 const { createToken: createPasswordResetToken } = require('../modules/common/helpers');
 
 // test api login
-describe('POST /api/v1/admin/session', () => {
+describe('POST /api/v1/account/session', () => {
   it('should return token when login success', async () => {
     await request
-      .post('/api/v1/admin/session')
+      .post('/api/v1/account/session')
       .send({
         loginId: 'demo@example.com',
         password: '123123',
@@ -25,11 +25,11 @@ describe('POST /api/v1/admin/session', () => {
 });
 
 // test api get account information
-describe('GET /api/v1/admin/account', () => {
+describe('GET /api/v1/account/profile', () => {
   it('should return profile data', async () => {
     const token = await getApiToken();
     await request
-      .get('/api/v1/admin/account')
+      .get('/api/v1/account/profile')
       .set('Authorization', `bearer ${token}`)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -41,11 +41,11 @@ describe('GET /api/v1/admin/account', () => {
 });
 
 // test api update account information
-describe('PUT /api/v1/admin/account', () => {
+describe('PUT /api/v1/account/profile', () => {
   it('should return updated profile data', async () => {
     const token = await getApiToken();
     await request
-      .put('/api/v1/admin/account')
+      .put('/api/v1/account/profile')
       .set('Authorization', `bearer ${token}`)
       .send({
         email: 'admin@m.mm',
@@ -62,10 +62,10 @@ describe('PUT /api/v1/admin/account', () => {
 });
 
 // test api request reset password
-describe('POST /api/v1/admin/password-reset/request', () => {
+describe('POST /api/v1/account/password-reset/request', () => {
   it('should send email when request reset password', async () => {
     await request
-      .post('/api/v1/admin/password-reset/request')
+      .post('/api/v1/account/password-reset/request')
       .send({
         email: 'demo@example.com',
       })
@@ -79,11 +79,11 @@ describe('POST /api/v1/admin/password-reset/request', () => {
 });
 
 // test api reset password
-describe('PUT /api/v1/admin/password', () => {
+describe.only('PUT /api/v1/account/password', () => {
   it('should update user\'s password with new password', async () => {
     const token = createPasswordResetToken({ _id: '59b39bcf538ff606c04d12db' }, '10m');
     await request
-      .put('/api/v1/admin/password')
+      .put('/api/v1/account/password')
       .send({
         token: token.value,
         password: '123123',

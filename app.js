@@ -4,8 +4,8 @@ const morgan = require('morgan');
 const logger = require('./modules/common/log');
 const sentry = require('./modules/common/sentry');
 const { notFoundExc } = require('./modules/common/helpers');
-const blogRouter = require('./modules/blog/router');
-const adminRouter = require('./modules/admin/router');
+const blogRouter = require('./modules/app/post/router');
+const adminRouter = require('./modules/app/account/router');
 
 const app = express();
 

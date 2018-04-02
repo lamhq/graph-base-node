@@ -1,10 +1,10 @@
-const createMiddleware = require('../common/jwt')
-const User = require('../common/models/user')
+const createMiddleware = require('../../common/jwt');
+const User = require('../models/user');
 const {
   validationExc,
   notFoundExc,
   verifyToken,
-} = require('../common/helpers');
+} = require('../../common/helpers');
 const {
   validateLoginForm,
   validateProfileData,
@@ -107,7 +107,6 @@ async function resetPassword(req, res, next) {
     var decoded = verifyToken(data.token)
     var user = await User.findOne({
       _id: decoded.userId,
-      userType: User.TYPE_ADMIN,
       status: User.STATUS_ACTIVE
     })
     user.setPassword(data.password)

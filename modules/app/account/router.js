@@ -3,18 +3,18 @@ const express = require('express');
 
 const router = express.Router();
 
-router.route('/admin/session')
+router.route('/account/session')
   .post(handlers.login);
 
 // send reset password email
-router.post('/admin/password-reset/request', handlers.requestResetPassword);
+router.post('/account/password-reset/request', handlers.requestResetPassword);
 
 // update account's password
-router.put('/admin/password', handlers.resetPassword);
+router.put('/account/password', handlers.resetPassword);
 
-router.use(/^\/admin.*?/, handlers.verifyAdminToken);
+router.use(/^\/account.*?/, handlers.verifyAdminToken);
 
-router.route('/admin/account')
+router.route('/account/profile')
   .get(handlers.getProfile)
   .put(handlers.updateProfile);
 

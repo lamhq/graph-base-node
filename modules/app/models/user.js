@@ -4,7 +4,7 @@ const {
   encryptPassword,
   verifyPassword,
   createToken,
-} = require('../helpers');
+} = require('../../common/helpers');
 
 const userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true },

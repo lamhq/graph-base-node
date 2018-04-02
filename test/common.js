@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const supertest = require('supertest');
 const server = require('../index');
 const log = require('../modules/common/log');
-const User = require('../modules/common/models/user');
+const User = require('../modules/app/models/user');
 
 const request = supertest(server);
 let token;
