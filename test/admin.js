@@ -124,11 +124,11 @@ describe('POST /api/v1/account/registrations', () => {
 });
 
 // test api refresh token
-describe.only('POST /api/v1/token', () => {
+describe.only('POST /api/v1/tokens', () => {
   it('should return new api token', async () => {
     const token = await getApiToken();
     await request
-      .post('/api/v1/token')
+      .post('/api/v1/tokens')
       .set('Authorization', `bearer ${token}`)
       .expect('Content-Type', /json/)
       .expect(200)

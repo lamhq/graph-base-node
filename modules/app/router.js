@@ -4,6 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 // refresh token
-router.post('/token', handlers.verifyUserToken, handlers.refreshToken);
+router.post('/tokens', handlers.verifyUserToken, handlers.refreshToken);
 
 module.exports = router;

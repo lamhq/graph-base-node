@@ -11,6 +11,8 @@ servers:
 tags:
   - name: Account
     description: Operations about account
+  - name: Post
+    description: Post management operations
 paths:
   /account/sessions:
     post:
@@ -78,7 +80,7 @@ paths:
         401:
           $ref: '#/components/responses/401'
 
-  /account/password-reset/request:
+  /account/password-reset/requests:
     post:
       tags:
       - Account
@@ -104,6 +106,7 @@ paths:
                   message:
                     type: string
                     example: "Password updated successfully."
+
   /account/password:
     put:
       tags:
@@ -158,7 +161,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 
-  /token:
+  /tokens:
     post:
       tags:
       - Account
@@ -174,23 +177,87 @@ paths:
   /posts:
     get:
       tags:
-        - Weather Forecast
-      summary: Gets the full weather forecast details.
-      description: Get weather forecast in abundant details including nearly every category of information, including wind, atmosphere, astronomy, forecast, and more.
-      operationId: GetWeatherData
-      externalDocs:
-        description: More details
-        url: "https://market.mashape.com/fyhao/weather-13#weatherdata"
+        - Post
+      summary: Get post list
+      parameters:
+        - name: limit
+          in: query
+          description: maximum number of records to return
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: current page
+          schema:
+            type: string
       responses:
         200:
-          description: Successful operation
+          description: List of filtered posts
           content:
             application/json:
               schema:
-                description: Successful operation
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags:
+        - Post
+      summary: Add new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        200:
+          description: Added post
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/User'
         404:
           $ref: '#/components/responses/404'
+
+  /posts/{postId}:
+    get:
+      tags:
+        - Post
+      summary: Get post detail
+      parameters:
+        - in: path
+          name: postId
+          description: post's id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: updated post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+
+    delete:
+      tags:
+        - Post
+      summary: Get post detail
+      parameters:
+        - in: path
+          name: postId
+          description: post's id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: deleted post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
 
 components:
   responses:
@@ -235,12 +302,38 @@ components:
           type: string
 
     User:
-      title: user data
+      title: User
       type: object
       properties:
         _id:
           type: string
+          description: user's id
         email:
+          type: string
+        username:
+          type: string
+        status:
+          type: string
+        profile:
+          type: object
+          properties:
+            firstname:
+              type: string
+            lastname:
+              type: string
+            phone:
+              type: string
+
+    Post:
+      title: Post
+      type: object
+      properties:
+        _id:
+          type: string
+          description: post's id
+        title:
+          type: string
+        content:
           type: string
 
   securitySchemes:
