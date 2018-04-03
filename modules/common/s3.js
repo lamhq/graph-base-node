@@ -11,34 +11,46 @@ const defOptions = {
   // expiration: '2018-12-12T00:00:00.000Z',
   // date: '20181212',
   // keyPrefix: 'test/',
-}
-
-function getSignature(params) {
-  const { region, service, secretAccessKey, date } = params
-  var base64Policy = getStringToSign(params)
-  var dateKey = cryptoJs.HmacSHA256(date, `AWS4${secretAccessKey}`)
-  var regionKey = cryptoJs.HmacSHA256(region, dateKey)
-  var serviceKey = cryptoJs.HmacSHA256(service, regionKey)
-  var signatureKey = cryptoJs.HmacSHA256('aws4_request', serviceKey)
-  return cryptoJs.HmacSHA256(base64Policy, signatureKey).toString(cryptoJs.enc.Hex)
-}
-
+};
 function getStringToSign(params) {
-  const { bucket, accessKeyId, region, service, expiration, date, keyPrefix } = params
-  var policy = {
+  const {
+    bucket,
+    accessKeyId,
+    region,
+    service,
+    expiration,
+    date,
+    keyPrefix,
+  } = params;
+  const policy = {
     expiration,
     conditions: [
-      { bucket: bucket },
+      { bucket },
       { success_action_status: '200' },
       ['starts-with', '$key', keyPrefix],
-      { 'acl': 'public-read' },
+      { acl: 'public-read' },
       ['starts-with', '$Content-Type', 'image/'],
       { 'x-amz-algorithm': 'AWS4-HMAC-SHA256' },
       { 'x-amz-credential': `${accessKeyId}/${date}/${region}/${service}/aws4_request` },
-      { 'x-amz-date': `${date}T000000Z` }
-    ]
-  }
-  return new Buffer(JSON.stringify(policy), 'utf-8').toString('base64')
+      { 'x-amz-date': `${date}T000000Z` },
+    ],
+  };
+  return Buffer.from(JSON.stringify(policy), 'utf-8').toString('base64');
+}
+
+function getSignature(params) {
+  const {
+    region,
+    service,
+    secretAccessKey,
+    date,
+  } = params;
+  const base64Policy = getStringToSign(params);
+  const dateKey = cryptoJs.HmacSHA256(date, `AWS4${secretAccessKey}`);
+  const regionKey = cryptoJs.HmacSHA256(region, dateKey)
+  const serviceKey = cryptoJs.HmacSHA256(service, regionKey)
+  const signatureKey = cryptoJs.HmacSHA256('aws4_request', serviceKey)
+  return cryptoJs.HmacSHA256(base64Policy, signatureKey).toString(cryptoJs.enc.Hex)
 }
 
 /**
@@ -50,7 +62,6 @@ function getUploadParams() {
   var expireAt = new Date()
   expireAt.setMinutes(expireAt.getMinutes() + duration)
   var date = expireAt.toISOString().substr(0, 10).replace(/-/g, '')
-
   var params = {
     ...defOptions,
     expiration: expireAt.toISOString(),
@@ -59,7 +70,6 @@ function getUploadParams() {
     ['x-amz-date']: `${date}T000000Z`,
     ['x-amz-credential']: `${accessKeyId}/${date}/${region}/${service}/aws4_request`,
   }
-
   return {
     keyPrefix: params.keyPrefix,
     acl: 'public-read',
@@ -71,7 +81,6 @@ function getUploadParams() {
     ['x-amz-algorithm']: 'AWS4-HMAC-SHA256',
   }
 }
-
 module.exports = {
   getUploadParams
 }

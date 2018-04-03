@@ -13,6 +13,8 @@ tags:
     description: Operations about account
   - name: Post
     description: Post management operations
+  - name: File
+    description: File upload operations
 paths:
   /account/sessions:
     post:
@@ -259,6 +261,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/Post'
 
+  /cm/files/upload-params:
+    get:
+      tags:
+        - File
+      summary: Get upload parameters to upload file to Amazon S3
+      description: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-post-example.html
+      responses:
+        200:
+          description: upload parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keyPrefix:
+                    type: string
+                  acl:
+                    type: string
+                  success_action_status:
+                    type: string
+                  policy:
+                    type: string
+                  x-amz-signature:
+                    type: string
+                  x-amz-credential:
+                    type: string
+                  x-amz-date:
+                    type: string
+                  x-amz-algorithm:
+                    type: string
+  /cm/files:
+    get:
+      tags:
+        - File
+      summary: Get list of uploaded files
+      responses:
+        200:
+          description: List of uploaded files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+
 components:
   responses:
     400:
@@ -335,6 +382,29 @@ components:
           type: string
         content:
           type: string
+
+    File:
+      title: File
+      type: object
+      properties:
+        _id:
+          type: string
+          description: post's id
+        url:
+          type: string
+        filename:
+          type: string
+        type:
+          type: string
+        meta:
+          type: object
+          properties:
+            s3-bucket:
+              type: string
+            s3-region:
+              type: string
+            s3-key:
+              type: string
 
   securitySchemes:
     bearerAuth:
