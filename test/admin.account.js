@@ -62,7 +62,7 @@ describe('PUT /api/v1/account/profile', () => {
 });
 
 // test api request reset password
-describe('POST /api/v1/account/password-reset/requests', () => {
+describe.only('POST /api/v1/account/password-reset/requests', () => {
   it('should send email when request reset password', async () => {
     await request
       .post('/api/v1/account/password-reset/requests')
@@ -123,19 +123,3 @@ describe('POST /api/v1/account/registrations', () => {
   });
 });
 
-// test api refresh token
-describe.only('POST /api/v1/tokens', () => {
-  it('should return new api token', async () => {
-    const token = await getApiToken();
-    await request
-      .post('/api/v1/tokens')
-      .set('Authorization', `bearer ${token}`)
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .expect((resp) => {
-        const result = JSON.parse(resp.text);
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('token');
-      });
-  });
-});

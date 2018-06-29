@@ -76,4 +76,4 @@ yarn run test
 
 ## How should i write code?
 
-Please refer to [Code Standard](https://the-app-team.atlassian.net/wiki/spaces/CI/pages/33521966/Code+Standards) documentation here.
+Please refer to [Code Standard](https://the-app-team.atlassian.net/wiki/spaces/FLEX/pages/92733471/NodeJs) documentation here.

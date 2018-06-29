@@ -26,6 +26,7 @@
     "nodemailer": "^4.4.1",
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.1",
+    "pug": "^2.0.3",
     "raven": "^2.3.0",
     "validate.js": "^0.11.1",
     "winston": "^2.4.0"

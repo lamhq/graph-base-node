@@ -12,8 +12,6 @@ const {
   validateForgotPwdData,
   validateResetPwdData,
   sendMailRequestResetPwd,
-  sendMailRegistrationToUser,
-  sendMailRegistrationToAdmin,
 } = require('./helpers');
 
 async function login(req, res, next) {
@@ -81,43 +79,41 @@ const verifyUserToken = createMiddleware('jwtAdmin', jwtPayload => User.findById
 
 async function requestResetPassword(req, res, next) {
   try {
-    var data = req.body
-    var errors = await validateForgotPwdData(data)
-    console.log(errors)
+    const data = req.body;
+    const errors = await validateForgotPwdData(data);
     if (errors) {
-      return next(validationExc('Please correct your input.', errors))
+      return next(validationExc('Please correct your input.', errors));
     }
 
-    var user = await User.findOne({
+    const user = await User.findOne({
       email: data.email,
-    })
-    res.json({ message: 'Please check your email.' })
-    sendMailRequestResetPwd(user)
+    });
+    sendMailRequestResetPwd(user);
+    return res.json({ message: 'Please check your email.' });
   } catch (err) {
-    next(err)
+    return next(err);
   }
 }
 
 async function resetPassword(req, res, next) {
   try {
-    var data = req.body
-    var errors = await validateResetPwdData(data)
-    console.log(errors)
+    const data = req.body;
+    const errors = await validateResetPwdData(data);
     if (errors) {
-      return next(validationExc('Please correct your input.', errors))
+      return next(validationExc('Please correct your input.', errors));
     }
 
-    var decoded = verifyToken(data.token)
-    var user = await User.findOne({
+    const decoded = verifyToken(data.token);
+    const user = await User.findOne({
       _id: decoded.userId,
-      status: User.STATUS_ACTIVE
-    })
-    user.setPassword(data.password)
-    await user.save()
+      status: User.STATUS_ACTIVE,
+    });
+    user.setPassword(data.password);
+    await user.save();
 
-    res.json({ message: 'Password updated successfully.' })
+    return res.json({ message: 'Password updated successfully.' });
   } catch (err) {
-    next(err)
+    return next(err);
   }
 }
 
@@ -125,7 +121,18 @@ async function resetPassword(req, res, next) {
 async function register(req, res, next) {
   try {
     const data = req.body;
-    const errors = await validateRegistrationData(data);
+    const { fields, dryRun } = req.query;
+    let errors;
+
+    // if dry run, only perform validation and return validation result
+    if (dryRun) {
+      errors = await validateRegistrationData(data, fields);
+      return errors
+        ? next(validationExc('Invalid registration data', errors))
+        : res.json('Validation completed successfully, no errors found.');
+    }
+
+    errors = await validateRegistrationData(data);
     if (errors) {
       return next(validationExc('Please correct your input.', errors));
     }
