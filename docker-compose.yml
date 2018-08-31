@@ -1,25 +1,31 @@
-version: '3'
+version: '3.5'
 services:
-  web:
+  database:
+    container_name: "blog_db"
+    image: "mvertes/alpine-mongo:4.0.0-0"
+    ports:
+      - "27017:27017"  # host_port:container_port
+    volumes:
+      - type: volume
+        source: db
+        target: /data/db
+    networks:
+      - blog
+  api:
+    container_name: "blog_api"
     build: .
     ports:
-      - "8087:3000"
-    environment:
-      - DB_URI=mongodb://mymongo/blog
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=465
-      - SMTP_USER=lam.huynh@magento.codespot.vn
-      - SMTP_PWD=!H4Xwz]S
-      - NODE_ENV=production
-      - PORT=3000
-      - WEB_URL=http://localhost:3001
-      - SENTRY_DNS=https://1f4bf702246d45d28e4f0d24d17832ca:0679e0a6c0804c19924078f98954f638@sentry.io/264486
-      - MONGODB_DEBUG=false
-      - DEBUG=*,-express:*,-morgan,-send,-body-parser:*
-  mymongo:
-    image: "mongo:3.4.10"
-    ports:
-      - "8086:27017"
-    volumes:
-     - ./mongo:/data/db
-     - ./data:/scripts
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      - database
+    networks:
+      - blog
+
+networks:
+  blog:
+    name: blog
+    driver: bridge
+
+volumes:
+  db:

@@ -1,16 +1,17 @@
 /**
  * wrapper module for making raven integration more easily
  */
-const Raven = require('raven')
-const { sentryDns } = require('../../config')
-var isEnabled = process.env.NODE_ENV==='production'
+const Raven = require('raven');
+const { sentryDns } = require('../../config');
+
+const isEnabled = process.env.NODE_ENV === 'production';
 
 /**
  * install raven
  */
 function install() {
-  if (!isEnabled) return false
-  Raven.config(sentryDns).install()
+  if (!isEnabled) return false;
+  return Raven.config(sentryDns).install();
 }
 
 /**
@@ -20,8 +21,8 @@ function install() {
  * @param {Object} app
  */
 function addRequestHandler(app) {
-  if (!isEnabled) return false
-  app.use(Raven.requestHandler())
+  if (!isEnabled) return false;
+  return app.use(Raven.requestHandler());
 }
 
 /**
@@ -31,12 +32,12 @@ function addRequestHandler(app) {
  * @param {Object} app
  */
 function addErrorHandler(app) {
-  if (!isEnabled) return false
-  app.use(Raven.errorHandler())
+  if (!isEnabled) return false;
+  return app.use(Raven.errorHandler());
 }
 
 module.exports = {
   install,
   addRequestHandler,
-  addErrorHandler
-}
+  addErrorHandler,
+};

@@ -29,7 +29,7 @@ async function sendMail({ params, templatePath, ...message }) {
     // send the mail
     logger.info('Going to send mail with message:', message);
     const transporter = mailer.createTransport(config.mail.transport);
-    let info = await transporter.sendMail(message);
+    const info = await transporter.sendMail(message);
 
     // Preview only available when sending through an Ethereal account
     if (process.env.NODE_ENV === 'dev') {
@@ -59,11 +59,11 @@ async function sendTestMail(data = null) {
   const message = {
     from: 'Tester <tester@gmail.com>',
     to: 'Recipient <daibanglam@gmail.com>',
-    subject: 'This is a test email from Nodemailer',
+    subject: 'This is a test email from handel:',
     html: '<p>This <strong>email</strong> is used to check that our mail server is working</p>',
     ...data,
   };
-  sendMail(message);
+  return sendMail(message);
 }
 
 module.exports = {

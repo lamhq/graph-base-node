@@ -1,54 +1,60 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt-nodejs')
-const ms = require('ms')
-const mongoose = require('mongoose')
-const config = require('../../config')
-const validate = require('validate.js')
+const qrcode = require('qrcode');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt-nodejs');
+const ms = require('ms');
+const mongoose = require('mongoose');
+const config = require('../../config');
+const validate = require('validate.js');
+const querystring = require('querystring');
+const logger = require('./log');
+const passwordMeter = require('passwordmeter');
+const axios = require('axios');
 
-function notFoundExc(message) {
+function notFoundExc(message, options = {}) {
   return {
     status: 404,
     code: 'resource_not_found',
-    message: message,
-  }
+    message,
+    ...options,
+  };
 }
 
-function validationExc(message, errors) {
+function validationExc(message, errors, code = null) {
   return {
     status: 400,
-    code: 'invalid_data',
-    message: message,
-    errors: errors,
-  }
+    code: code || 'invalid_data',
+    message,
+    errors,
+  };
 }
 
 function unauthorizedExc(message) {
   return {
     status: 401,
     code: 'unauthorized',
-    message: message,
-  }
+    message,
+  };
 }
 
 /**
  * @returns Promise
  */
 function connectToDb() {
-  mongoose.set('debug', config.db.debug)
-  mongoose.Promise = global.Promise
-  var options = {
+  mongoose.set('debug', config.db.debug);
+  mongoose.Promise = global.Promise;
+  const options = {
     config: { autoIndex: false },
-    useMongoClient: true,
-  }
-  return mongoose.connect(config.db.uri, options)
+    useNewUrlParser: true,
+  };
+  return mongoose.connect(config.db.uri, options);
 }
 
 function encryptPassword(value) {
-  return bcrypt.hashSync(value)
+  return bcrypt.hashSync(value);
 }
 
 function verifyPassword(value, hash) {
-  return bcrypt.compareSync(value, hash)
+  return bcrypt.compareSync(value, hash);
 }
 
 /**
@@ -57,23 +63,23 @@ function verifyPassword(value, hash) {
  * @param {String} duration
  */
 function createToken(user, duration) {
-  var expiredAt = new Date()
-  expiredAt.setSeconds(expiredAt.getSeconds() + ms(duration) / 1000)
-  var value = jwt.sign({ userId: user._id }, config.appSecret, { expiresIn: duration })
+  const expireAt = new Date();
+  expireAt.setSeconds(expireAt.getSeconds() + (ms(duration) / 1000));
+  const value = jwt.sign({ userId: user._id }, config.appSecret, { expiresIn: duration });
   return {
     value,
-    expiredAt
-  }
+    expireAt,
+  };
 }
 
 function verifyToken(token) {
-  var result = false
+  let result = false;
   try {
-    result = jwt.verify(token, config.appSecret)
+    result = jwt.verify(token, config.appSecret);
   } catch (err) {
-    logger.info('Validate access token failed.')
+    logger.info('Validate access token failed.');
   }
-  return result
+  return result;
 }
 
 /**
@@ -84,42 +90,40 @@ function verifyToken(token) {
  * @param {Mixed} defVal default value when the result is undefined
  */
 function getObjectValue(obj, path, defVal = undefined) {
-  var result = validate.getDeepObjectValue(obj, keyPath)
-  return result ? result : defVal
+  const result = validate.getDeepObjectValue(obj, path);
+  return result || defVal;
 }
 
 function filterObjectKeys(obj, allowedKeys = []) {
-  var result = {}
-  allowedKeys.forEach(key => {
+  const result = {};
+  allowedKeys.forEach((key) => {
     if (obj[key]) {
-      result[key] = obj[key]
+      result[key] = obj[key];
     }
-  })
-  return result
+  });
+  return result;
 }
 
-function validateFileData(data) {
-  var rules = {
-    url: {
-      presence: { allowEmpty: false },
-    },
-    filename: {
-      presence: { allowEmpty: false },
-    },
-    type: {
-      presence: { allowEmpty: false },
-    },
-    bucket: {
-      presence: { allowEmpty: false },
-    },
-    region: {
-      presence: { allowEmpty: false },
-    },
-    key: {
-      presence: { allowEmpty: false },
-    },
-  }
-  return validate(data, rules, { format: 'grouped' })
+function createWebUrl(path, params = null) {
+  const q = params ? `?${querystring.stringify(params)}` : '';
+  return `${config.webUrl}/${path}${q}`;
+}
+
+function round(number, precision) {
+  return parseFloat(number).toFixed(precision);
+}
+
+/**
+ * password strength validator
+ * score must larger than 70%
+ */
+function passwordStrength(value) {
+  const score = passwordMeter.checkPass(value, 8);
+  return score <= 70 ? 'is not strength enough, must minimum 8 characters in length, contain number, symbol, uppercase/lowercase letters' : null;
+}
+
+function buildQuery(obj) {
+  return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
 }
 
 module.exports = {
@@ -132,4 +136,9 @@ module.exports = {
   createToken,
   verifyToken,
   getObjectValue,
-}
+  filterObjectKeys,
+  createWebUrl,
+  round,
+  passwordStrength,
+  buildQuery,
+};
