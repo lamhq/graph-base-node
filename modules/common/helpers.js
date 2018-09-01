@@ -1,4 +1,3 @@
-const qrcode = require('qrcode');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 const ms = require('ms');
@@ -7,8 +6,6 @@ const config = require('../../config');
 const validate = require('validate.js');
 const querystring = require('querystring');
 const logger = require('./log');
-const passwordMeter = require('passwordmeter');
-const axios = require('axios');
 
 function notFoundExc(message, options = {}) {
   return {
@@ -113,14 +110,6 @@ function round(number, precision) {
   return parseFloat(number).toFixed(precision);
 }
 
-/**
- * password strength validator
- * score must larger than 70%
- */
-function passwordStrength(value) {
-  const score = passwordMeter.checkPass(value, 8);
-  return score <= 70 ? 'is not strength enough, must minimum 8 characters in length, contain number, symbol, uppercase/lowercase letters' : null;
-}
 
 function buildQuery(obj) {
   return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
@@ -139,6 +128,5 @@ module.exports = {
   filterObjectKeys,
   createWebUrl,
   round,
-  passwordStrength,
   buildQuery,
 };
