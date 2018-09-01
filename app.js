@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const path = require('path');
 const logger = require('./modules/common/log');
 const sentry = require('./modules/common/sentry');
 const { notFoundExc } = require('./modules/common/helpers');
 const router = require('./router');
+const graphql = require('./modules/graphql');
 
 const app = express();
 
@@ -23,6 +23,8 @@ app.use(bodyParser.json());
 app.use(morgan('tiny', {
   stream: logger.stream,
 }));
+
+app.use('/graphql', graphql);
 
 // application router
 app.use(router);
