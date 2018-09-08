@@ -1,67 +1,71 @@
-// load environment variables from .env file
 require('dotenv').config();
-
-const http = require('http');
-const app = require('./app');
-const { port } = require('./config');
-const log = require('./modules/common/log');
+const { ApolloServer, gql } = require('apollo-server');
+const models = require('./modules/app/models');
 const { connectToDb } = require('./modules/common/helpers');
 
-const server = http.createServer(app);
-
-/**
- * Event listener for HTTP server "error" event.
- */
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  const bind = typeof port === 'string'
-    ? `Pipe ${port}` : `Port ${port}`;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      log.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-
-    case 'EADDRINUSE':
-      log.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-
-    default:
-      throw error;
-  }
+// The GraphQL schema
+const typeDefs = gql`
+type Query {
+  getPosts: [Post]
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? `pipe ${addr}` : `port ${addr.port}`;
-  log.info(`Web server listening on ${bind}`);
+type User {
+  email: String,
+  firstname: String,
+  lastname: String,
+  username: String,
+  roles: [String],
+  status: String,
+  post: [Post]
 }
 
-/**
- * Start the api server
- */
-async function run() {
-  try {
-    await connectToDb();
-    server.listen(port);
-    server.on('error', onError);
-    server.on('listening', onListening);
-  } catch (error) {
-    log.error(error);
-    process.exit(1);
-  }
+type Category {
+  name: String,
+  parent: Category,
+  posts: [Post]
 }
 
-run();
+type Post {
+  title: String,
+  content: String,
+  category: Category,
+  author: User
+}
+`;
 
-module.exports = server;
+// A map of functions which return data for the schema.
+const resolvers = {
+  Query: {
+    getPosts: (obj, args, context, info) => context.db.models.post.find(),
+  },
+  Post: {
+    category: (post, args, context, info) => {
+      if (!post.categoryId) {
+        return null;
+      }
+      return context.db.models.category.findById(post.categoryId);
+    },
+    author: (post, args, context, info) => {
+      if (!post.authorId) {
+        return null;
+      }
+      return context.db.models.user.findById(post.authorId);
+    },
+  },
+};
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => ({
+
+    db: {
+      models,
+    },
+  }),
+});
+
+server.listen().then(({ url }) => {
+  console.log(`🚀 Server ready at ${url}`);
+  connectToDb();
+});

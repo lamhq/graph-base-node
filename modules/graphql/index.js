@@ -1,56 +1,25 @@
-const { buildSchema } = require('graphql');
-const graphqlHTTP = require('express-graphql');
-// const resolver = require('./resolver');
+const { ApolloServer, gql } = require('apollo-server');
 
-const schema = buildSchema(`
-type Query {
-  hello: String
-  posts: [Post]
-  post(id: ID!): Post
-}
-
-type Post {
-  id: ID!,
-  title: String!,
-  content: String,
-  publishedAt: String
-}
-`);
-
-const Post = require('../app/models/post');
-
-class MyPost {
-  constructor(post) {
-    this.post = post;
+// The GraphQL schema
+const typeDefs = gql`
+  type Query {
+    "A simple type for getting started!"
+    hello: String
   }
+`;
 
-  id() {
-    return this.post._id.toString();
-  }
-
-  title() {
-    return this.post.title;
-  }
-
-  publishedAt() {
-    const d = new Date(this.post.createdAt);
-    return d.toISOString();
-  }
-}
-
-// The root provides a resolver function for each API endpoint
-const resolver = {
-  hello: () => 'Hello world!',
-  posts: () => Post.find().sort({ _id: -1 }),
-  post: async (args) => {
-    const item = await Post.findById(args.id);
-    return new MyPost(item.toObject());
+// A map of functions which return data for the schema.
+const resolvers = {
+  Query: {
+    hello: () => 'world',
   },
 };
 
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
-module.exports = graphqlHTTP({
-  schema,
-  rootValue: resolver,
-  graphiql: true,
+server.listen().then(({ url }) => {
+  console.log(`🚀 Server ready at ${url}`);
 });

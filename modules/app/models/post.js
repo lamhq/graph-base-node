@@ -1,13 +1,14 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require('mongoose');
 
-// define schema
+const { Schema } = mongoose;
+
 const postSchema = Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-}, { timestamps: true })
+  categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
+  authorId: { type: Schema.Types.ObjectId, ref: 'User' },
+}, { timestamps: true });
 
-// map schema to collection named `blog.posts`
-const Post = mongoose.model('blog.posts', postSchema)
+const Post = mongoose.model('Post', postSchema);
 
-module.exports = Post
+module.exports = Post;

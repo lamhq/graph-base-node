@@ -1,6 +1,6 @@
 type Query {
   hello: String
-  posts: [Post]
+  getPost: [Post]
   post: Post
 }
 
