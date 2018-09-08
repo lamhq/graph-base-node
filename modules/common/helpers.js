@@ -62,7 +62,7 @@ function verifyPassword(value, hash) {
 function createToken(user, duration) {
   const expireAt = new Date();
   expireAt.setSeconds(expireAt.getSeconds() + (ms(duration) / 1000));
-  const value = jwt.sign({ userId: user._id }, config.appSecret, { expiresIn: duration });
+  const value = jwt.sign({ id: user._id }, config.appSecret, { expiresIn: duration });
   return {
     value,
     expireAt,

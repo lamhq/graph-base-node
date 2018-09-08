@@ -1,23 +1,6 @@
 [
 	{
 		"_id": {
-			"$oid": "5a45f1efe2aaf906b45f8e8e"
-		},
-		"updatedAt": {
-			"$date": "2017-12-29T07:47:52.322Z"
-		},
-		"createdAt": {
-			"$date": "2017-12-29T07:42:39.094Z"
-		},
-		"title": "Hello world!",
-		"content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris a libero fringilla, rhoncus elit sed.\n\nDuis faucibus, ex eu consectetur semper, justo augue tincidunt risus, vitae venenatis est felis maximus felis.",
-		"categoryId": {
-			"$oid": "59b39bcf538ff606c04d12db"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "5a45f0f86ed4eb04b810ebb6"
 		},
 		"updatedAt": {
@@ -34,7 +17,26 @@
 		},
 		"authorId": {
 			"$oid": "59b39bcf538ff606c04d12db"
-		}
+		},
+		"status": "Active"
+	},
+	{
+		"_id": {
+			"$oid": "5a45f1efe2aaf906b45f8e8e"
+		},
+		"updatedAt": {
+			"$date": "2017-12-29T07:47:52.322Z"
+		},
+		"createdAt": {
+			"$date": "2017-12-29T07:42:39.094Z"
+		},
+		"title": "Hello world!",
+		"content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris a libero fringilla, rhoncus elit sed.\n\nDuis faucibus, ex eu consectetur semper, justo augue tincidunt risus, vitae venenatis est felis maximus felis.",
+		"categoryId": {
+			"$oid": "59b39bcf538ff606c04d12db"
+		},
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -48,7 +50,8 @@
 		},
 		"title": "Orci varius natoque penatibus",
 		"content": "Etiam et tincidunt nisi. Curabitur nec congue tellus, et sollicitudin purus. Proin at nulla metus. Pellentesque convallis suscipit erat",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -62,7 +65,8 @@
 		},
 		"title": "Aenean ante risus, semper faucibus sem at, tempus",
 		"content": "Curabitur nec congue tellus, et sollicitudin purus. Proin at nulla metus. Pellentesque convallis suscipit erat, et sagittis dolor porttitor eu.",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -79,7 +83,8 @@
 		"__v": 0,
 		"authorId": {
 			"$oid": "59b39bcf538ff606c04d12db"
-		}
+		},
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -93,7 +98,8 @@
 		},
 		"title": "Aliquam accumsan eget lorem eu bibendum",
 		"content": "Etiam auctor felis ac nulla lobortis, vitae bibendum mi varius. Integer interdum magna vitae erat sollicitudin, eu rutrum ipsum finibus. Nulla ornare, tortor non facilisis eleifend, leo est vestibulum lectus, nec ultrices erat dui at quam. Nulla nisi ante, dignissim sed egestas at, gravida nec erat. Sed dapibus dolor non diam dignissim, sit amet auctor sapien sodales.",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -107,7 +113,8 @@
 		},
 		"title": "Pellentesque eu lacus sed nulla aliquet malesuada et convallis enim.",
 		"content": "Cras volutpat ante velit, in lobortis est cursus non. Aliquam ac quam eu ex elementum tincidunt. Cras ac eros tempus, interdum erat at, efficitur magna. Sed vitae erat ante. Vestibulum nec ante ipsum. Sed enim mi, blandit in pellentesque non, sodales sit amet ipsum.",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -121,7 +128,8 @@
 		},
 		"title": "Pellentesque viverra",
 		"content": "Donec tortor est, vulputate eu lectus a, congue aliquet nunc. Nunc at fringilla ligula. Donec sit amet mauris ut metus eleifend hendrerit pellentesque a orci. In id cursus ligula. Morbi non purus cursus, posuere ante a, porta felis. Nam quis purus nisl. Maecenas sed nulla malesuada",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -135,7 +143,8 @@
 		},
 		"title": "Cras ac eros tempus, interdum erat at, efficitur magna",
 		"content": "Curabitur nec congue tellus, et sollicitudin purus. Proin at nulla metus. Pellentesque convallis suscipit erat, et sagittis dolor porttitor eu. Aenean ante risus, semper faucibus sem at, tempus condimentum purus. Quisque gravida imperdiet ex, eget pulvinar odio posuere vitae. Praesent porta neque arcu, ut maximus est bibendum eget. Curabitur pretium ligula eget rutrum scelerisque.",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	},
 	{
 		"_id": {
@@ -149,6 +158,7 @@
 		},
 		"title": "Neque porro quisquam est qui dolorem ",
 		"content": "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain...",
-		"__v": 0
+		"__v": 0,
+		"status": "Active"
 	}
 ]

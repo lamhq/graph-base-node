@@ -1,21 +1,22 @@
-[
-	{
-		"_id": {
-			"$oid": "59b39bcf538ff606c04d12db"
-		},
-		"__v": 0,
-		"username": "admin",
-		"email": "admin@example.com",
-		"password": "$2a$10$ZfF2V9N3rpazJwveaYfXn.5ye7Sw8y9KfLMhAzk6iNPxZedKr8wO6",
-		"roles": [
-			"admin"
-		],
-		"status": "Active",
-		"createdAt": {
-			"$date": "2018-03-16T09:26:28.311Z"
-		},
-		"updatedAt": {
-			"$date": "2018-03-16T09:27:24.317Z"
-		}
+[{
+	"_id": {
+		"$oid": "59b39bcf538ff606c04d12db"
+	},
+	"__v": 0,
+	"firstname": "John",
+	"lastname": "Doe",
+	"username": "admin",
+	"email": "admin@example.com",
+	"password": "$2a$10$3kNrbGWPbInw1TjlbvkzFehCvgvyhZqrg3eud.EzU2V/AGSs7J0F2",
+	"roles": [
+		"admin"
+	],
+	"status": "Active",
+	"createdAt": {
+		"$date": "2018-03-16T09:26:28.311Z"
+	},
+	"updatedAt": {
+		"$date": "2018-03-16T09:27:24.317Z"
 	}
-]
+}]
+
