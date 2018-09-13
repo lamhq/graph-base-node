@@ -5,33 +5,6 @@ const mongoose = require('mongoose');
 const config = require('../../config');
 const validate = require('validate.js');
 const querystring = require('querystring');
-const logger = require('./log');
-
-function notFoundExc(message, options = {}) {
-  return {
-    status: 404,
-    code: 'resource_not_found',
-    message,
-    ...options,
-  };
-}
-
-function validationExc(message, errors, code = null) {
-  return {
-    status: 400,
-    code: code || 'invalid_data',
-    message,
-    errors,
-  };
-}
-
-function unauthorizedExc(message) {
-  return {
-    status: 401,
-    code: 'unauthorized',
-    message,
-  };
-}
 
 /**
  * @returns Promise
@@ -74,9 +47,29 @@ function verifyToken(token) {
   try {
     result = jwt.verify(token, config.appSecret);
   } catch (err) {
-    logger.info('Validate access token failed.');
+    // logger.info('Validate access token failed.');
   }
   return result;
+}
+
+async function getUserFromRequest(req, model) {
+  const auth = req.headers.authorization;
+  if (!auth) {
+    return null;
+  }
+
+  const token = auth.replace('Bearer ', '');
+  if (!token) {
+    return null;
+  }
+
+  const { id } = verifyToken(token);
+  if (!id) {
+    return false;
+  }
+
+  const user = await model.findById(id);
+  return user || null;
 }
 
 /**
@@ -110,15 +103,11 @@ function round(number, precision) {
   return parseFloat(number).toFixed(precision);
 }
 
-
 function buildQuery(obj) {
   return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
 }
 
 module.exports = {
-  notFoundExc,
-  validationExc,
-  unauthorizedExc,
   connectToDb,
   encryptPassword,
   verifyPassword,
@@ -129,4 +118,5 @@ module.exports = {
   createWebUrl,
   round,
   buildQuery,
+  getUserFromRequest,
 };
