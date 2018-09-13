@@ -1,0 +1,54 @@
+scalar Date
+
+"The root Query"
+type Query {
+  getPosts: [Post]
+  getAccessToken(email: String, password: String): AccessToken
+  getCategories: [Category]
+  getCategory(id: ID): Category
+}
+
+"User schema"
+type User {
+  id: ID,
+  email: String
+  firstname: String
+  lastname: String
+  username: String
+  roles: [String]
+  status: String
+
+  "List of posts posted by this user"
+  posts: [Post]
+}
+
+"Post Category schema"
+type Category {
+  id: ID,
+  name: String
+  parent: Category
+  posts: [Post]
+  postCount: Int
+}
+
+"Post schema"
+type Post {
+  id: ID,
+  title: String
+  content: String
+  createdAt: Date
+  category: Category
+  author: User
+}
+
+"Access token for calling API, using Bearer authentication scheme"
+type AccessToken {
+  "The token string (JWT) format"
+  value: String
+
+  "The date that this token is no longer valid"
+  expireAt: Date
+
+  "User information"
+  user: User
+}

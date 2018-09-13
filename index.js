@@ -1,15 +1,23 @@
+const fs = require('fs');
+
+// enable importing graphql schema file (*.gql)
+require.extensions['.gql'] = (module, filename) => {
+  module.exports = fs.readFileSync(filename, 'utf8');
+};
+
+// load environment variables from .env file
 require('dotenv').config();
 
 const { ApolloServer } = require('apollo-server');
 const { connectToDb, getUserFromRequest } = require('./modules/common/helpers');
 const models = require('./modules/app/models');
 const logger = require('./modules/common/log');
-const resolvers = require('./resolvers');
+const { port } = require('./config');
 const schema = require('./schema');
 
+// create apollo server
 const server = new ApolloServer({
   schema,
-  resolvers,
   context: async ({ req }) => {
     // get user identity from request
     const user = await getUserFromRequest(req, models.user);
@@ -22,10 +30,11 @@ const server = new ApolloServer({
   },
 });
 
+// entry point function
 async function run() {
   try {
     await connectToDb();
-    const { url } = await server.listen();
+    const { url } = await server.listen({ port });
     logger.info(`🚀 Server ready at ${url}`);
   } catch (error) {
     logger.error(error.stack);

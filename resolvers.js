@@ -10,7 +10,7 @@ const {
 const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
-    description: 'Custom scalar type for Date',
+    description: 'A string represent date in ISO format',
     serialize(value) {
       return value.toISOString();
     },
