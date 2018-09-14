@@ -57,6 +57,13 @@ const resolvers = {
       };
     },
   },
+  Mutation: {
+    addPost: async (obj, args, { db }) => {
+      const { post } = db.models;
+      const posts = await post.findOne();
+      return posts;
+    },
+  },
   Post: {
     category: async (post, args, context) => {
       if (!post.categoryId) {

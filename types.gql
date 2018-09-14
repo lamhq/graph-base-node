@@ -52,3 +52,13 @@ type AccessToken {
   "User information"
   user: User
 }
+
+input AddPostInput {
+  title: String
+  content: String
+  categoryId: ID
+}
+
+type Mutation {
+  addPost(data: AddPostInput): Post
+}
