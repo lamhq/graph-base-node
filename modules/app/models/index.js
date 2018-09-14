@@ -1,9 +1,9 @@
-const user = require('./user');
-const post = require('./post');
-const category = require('./category');
+const User = require('./user');
+const Post = require('./post');
+const Category = require('./category');
 
 module.exports = {
-  user,
-  post,
-  category,
+  User,
+  Post,
+  Category,
 };

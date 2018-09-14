@@ -45,7 +45,7 @@ const resolvers = {
       return item;
     },
     getAccessToken: async (obj, { email, password }, context) => {
-      const user = await context.db.models.user.findOne({ email });
+      const user = await context.db.models.User.findOne({ email });
       if (!user || !verifyPassword(password, user.password)) {
         throw new UserInputError('Incorrect email or password');
       }
@@ -59,9 +59,9 @@ const resolvers = {
   },
   Mutation: {
     addPost: async (obj, args, { db }) => {
-      const { post } = db.models;
-      const posts = await post.findOne();
-      return posts;
+      const { Post } = db.models;
+      const post = await Post.findOne();
+      return post;
     },
   },
   Post: {
@@ -69,24 +69,24 @@ const resolvers = {
       if (!post.categoryId) {
         return null;
       }
-      const category = await context.db.models.category.findById(post.categoryId);
+      const category = await context.db.models.Category.findById(post.categoryId);
       return category;
     },
     author: async (post, args, context) => {
       if (!post.authorId) {
         return null;
       }
-      const user = await context.db.models.user.findById(post.authorId);
+      const user = await context.db.models.User.findById(post.authorId);
       return user;
     },
   },
   Category: {
     posts: async (category, args, { db }) => {
-      const posts = await db.models.post.find({ categoryId: category._id }).sort({ _id: -1 });
+      const posts = await db.models.Post.find({ categoryId: category._id }).sort({ _id: -1 });
       return posts;
     },
     postCount: async (category, args, { db }) => {
-      const no = await db.models.post.countDocuments({ categoryId: category._id });
+      const no = await db.models.Post.countDocuments({ categoryId: category._id });
       return no;
     },
   },
