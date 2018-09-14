@@ -31,11 +31,17 @@ type Category {
   postCount: Int
 }
 
+enum PostStatus {
+  Active
+  Inactive
+}
+
 "Post schema"
 type Post {
   id: ID,
   title: String
   content: String
+  status: PostStatus
   createdAt: Date
   category: Category
   author: User
@@ -54,9 +60,10 @@ type AccessToken {
 }
 
 input AddPostInput {
-  title: String
+  title: String!
   content: String
   categoryId: ID
+  status: PostStatus!
 }
 
 type Mutation {

@@ -7,7 +7,7 @@ const STATUS_INACTIVE = 'Inactive';
 
 const postSchema = Schema({
   title: { type: String, required: true },
-  content: { type: String, required: true },
+  content: { type: String },
   categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
   authorId: { type: Schema.Types.ObjectId, ref: 'User' },
   status: {

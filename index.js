@@ -34,6 +34,7 @@ const server = new ApolloServer({
 async function run() {
   try {
     await connectToDb();
+    logger.info('Connected to database');
     const { url } = await server.listen({ port });
     logger.info(`🚀 Server ready at ${url}`);
   } catch (error) {

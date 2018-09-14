@@ -26,12 +26,12 @@ const resolvers = {
   }),
   Query: {
     getPosts: async (obj, args, { db, user }) => {
-      const { post } = db.models;
+      const { Post } = db.models;
       const filter = {};
       if (!user) {
-        filter.status = post.STATUS_ACTIVE;
+        filter.status = Post.STATUS_ACTIVE;
       }
-      const posts = await post.find(filter).sort({ _id: -1 });
+      const posts = await Post.find(filter).sort({ _id: -1 });
       return posts;
     },
     getCategories: async (obj, args, { db }) => {
@@ -58,9 +58,14 @@ const resolvers = {
     },
   },
   Mutation: {
-    addPost: async (obj, args, { db }) => {
-      const { Post } = db.models;
-      const post = await Post.findOne();
+    addPost: async (obj, { data }, { db }) => {
+      const post = new db.models.Post();
+      // validate data
+      post.title = data.title;
+      post.content = data.content;
+      post.categoryId = data.categoryId;
+      post.status = data.status;
+      await post.save();
       return post;
     },
   },
