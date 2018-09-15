@@ -13,11 +13,12 @@ const { connectToDb, getUserFromRequest } = require('./modules/common/helpers');
 const { port } = require('./config');
 const logger = require('./modules/common/log');
 const models = require('./modules/app/models');
-const schema = require('./modules/app/schema');
+const { typeDefs, resolvers } = require('./modules/app');
 
 // create apollo server
 const server = new ApolloServer({
-  schema,
+  typeDefs,
+  resolvers,
   context: async ({ req }) => {
     // get user identity from request
     const user = await getUserFromRequest(req, models.User);

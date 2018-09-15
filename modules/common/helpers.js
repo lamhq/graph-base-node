@@ -107,6 +107,56 @@ function buildQuery(obj) {
   return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
 }
 
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+function isObject(item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+/**
+ * Deep merge multiple objects.
+ * Override the first object with the merge result
+ * @param target
+ * @param ...sources
+ */
+function deepMerge(target, ...sources) {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach((key) => {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        deepMerge(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    });
+  }
+
+  return deepMerge(target, ...sources);
+}
+
+/**
+ * Deep merge multiple objects
+ * Return the merged object without modifying
+ */
+function mergeObjects(...objects) {
+  const result = {};
+  deepMerge(result, ...objects);
+  return result;
+}
+
+function mergeGraphModules(modules) {
+  return modules.reduce((mod, result) => ({
+    typeDefs: [...mod.typeDefs, ...result.typeDefs],
+    resolvers: mergeObjects(mod.resolvers, result.resolvers),
+  }), { typeDefs: [], resolvers: {} });
+}
+
 module.exports = {
   connectToDb,
   encryptPassword,
@@ -119,4 +169,5 @@ module.exports = {
   round,
   buildQuery,
   getUserFromRequest,
+  mergeGraphModules,
 };

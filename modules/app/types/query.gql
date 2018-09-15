@@ -1,8 +1,5 @@
 "The root Query"
 type Query {
-  getPosts: [Post]
   getAccessToken(email: String, password: String): AccessToken
   renewAccessToken: AccessToken
-  getCategories: [Category]
-  getCategory(id: ID): Category
 }
