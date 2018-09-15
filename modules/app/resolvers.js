@@ -4,7 +4,7 @@ const { Kind } = require('graphql/language');
 const {
   verifyPassword,
   createToken,
-} = require('./modules/common/helpers');
+} = require('../common/helpers');
 
 // A map of functions which return data for the schema.
 const resolvers = {

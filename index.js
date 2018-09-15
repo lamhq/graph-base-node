@@ -10,10 +10,10 @@ require('dotenv').config();
 
 const { ApolloServer } = require('apollo-server');
 const { connectToDb, getUserFromRequest } = require('./modules/common/helpers');
-const models = require('./modules/app/models');
-const logger = require('./modules/common/log');
 const { port } = require('./config');
-const schema = require('./schema');
+const logger = require('./modules/common/log');
+const models = require('./modules/app/models');
+const schema = require('./modules/app/schema');
 
 // create apollo server
 const server = new ApolloServer({
