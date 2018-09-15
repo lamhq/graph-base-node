@@ -1,0 +1,11 @@
+"Access token for calling API, using Bearer authentication scheme"
+type AccessToken {
+  "The token string (JWT format)"
+  value: String
+
+  "The date that this token is no longer valid"
+  expireAt: Date
+
+  "User information"
+  user: User
+}

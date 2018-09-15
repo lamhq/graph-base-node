@@ -1,0 +1,10 @@
+input AddPostInput {
+  title: String!
+  content: String
+  categoryId: ID
+  status: PostStatus!
+}
+
+type Mutation {
+  addPost(data: AddPostInput): Post
+}

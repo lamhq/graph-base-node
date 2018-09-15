@@ -52,7 +52,7 @@ function verifyToken(token) {
   return result;
 }
 
-async function getUserFromRequest(req, model) {
+async function getUserFromRequest(req, User) {
   const auth = req.headers.authorization;
   if (!auth) {
     return null;
@@ -68,7 +68,7 @@ async function getUserFromRequest(req, model) {
     return false;
   }
 
-  const user = await model.findById(id);
+  const user = await User.findById(id);
   return user || null;
 }
 

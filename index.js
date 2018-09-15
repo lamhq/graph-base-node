@@ -20,7 +20,7 @@ const server = new ApolloServer({
   schema,
   context: async ({ req }) => {
     // get user identity from request
-    const user = await getUserFromRequest(req, models.user);
+    const user = await getUserFromRequest(req, models.User);
     return {
       user,
       db: {

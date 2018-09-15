@@ -1,0 +1,10 @@
+"Post schema"
+type Post {
+  id: ID,
+  title: String
+  content: String
+  status: PostStatus
+  createdAt: Date
+  category: Category
+  author: User
+}
