@@ -9,11 +9,11 @@ require.extensions['.gql'] = (module, filename) => {
 require('dotenv').config();
 
 const { ApolloServer } = require('apollo-server');
-const { connectToDb, getUserFromRequest } = require('./modules/common/helpers');
+const { connectToDb, getUserFromRequest } = require('./src/common/helpers');
 const { port } = require('./config');
-const logger = require('./modules/common/log');
-const models = require('./modules/app/models');
-const { typeDefs, resolvers } = require('./modules/app');
+const logger = require('./src/common/log');
+const models = require('./src/app/models');
+const { typeDefs, resolvers } = require('./src');
 
 // create apollo server
 const server = new ApolloServer({

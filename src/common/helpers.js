@@ -150,11 +150,11 @@ function mergeObjects(...objects) {
   return result;
 }
 
-function mergeGraphModules(modules) {
+function mergeGraphModules(...modules) {
   return modules.reduce((mod, result) => ({
     typeDefs: [...mod.typeDefs, ...result.typeDefs],
-    resolvers: mergeObjects(mod.resolvers, result.resolvers),
-  }), { typeDefs: [], resolvers: {} });
+    resolvers: mergeObjects(result.resolvers, mod.resolvers),
+  }), { typeDefs: '', resolvers: {} });
 }
 
 module.exports = {

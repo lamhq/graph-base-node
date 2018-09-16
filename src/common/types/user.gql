@@ -1,0 +1,4 @@
+"User schema"
+type User {
+  id: ID
+}

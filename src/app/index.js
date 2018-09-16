@@ -8,4 +8,4 @@ const appModule = {
   resolvers,
 };
 
-module.exports = mergeGraphModules([appModule, publicModule]);
+module.exports = mergeGraphModules(appModule, publicModule);

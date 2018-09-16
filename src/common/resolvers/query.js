@@ -2,7 +2,7 @@ const { UserInputError } = require('apollo-server');
 const {
   verifyPassword,
   createToken,
-} = require('../../common/helpers');
+} = require('../helpers');
 const config = require('../../../config');
 
 async function getAccessToken(obj, { email, password }, context) {
