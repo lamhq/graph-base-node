@@ -1,0 +1,4 @@
+type Mutation {
+  adminAddPost(data: PostInput): Post
+  adminUpdatePost(id: ID!, data: PostInput): Post
+}

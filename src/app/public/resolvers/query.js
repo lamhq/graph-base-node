@@ -1,10 +1,6 @@
-async function getPosts(obj, args, { db, user }) {
+async function getPosts(obj, args, { db }) {
   const { Post } = db.models;
-  const filter = {};
-  if (!user) {
-    filter.status = Post.STATUS_ACTIVE;
-  }
-  const posts = await Post.find(filter).sort({ _id: -1 });
+  const posts = await Post.find({ status: Post.STATUS_ACTIVE }).sort({ _id: -1 });
   return posts;
 }
 

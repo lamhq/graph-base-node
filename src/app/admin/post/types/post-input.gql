@@ -1,10 +1,6 @@
-input AddPostInput {
+input PostInput {
   title: String!
   content: String
   categoryId: ID
   status: PostStatus!
-}
-
-type Mutation {
-  addPost(data: AddPostInput): Post
 }

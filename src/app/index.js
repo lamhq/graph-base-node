@@ -1,11 +1,12 @@
 const { mergeGraphModules } = require('../common/helpers');
-const publicModule = require('./public');
+const pub = require('./public');
+const admin = require('./admin');
 const typeDefs = require('./types');
 const resolvers = require('./resolvers');
 
-const appModule = {
+const app = {
   typeDefs,
   resolvers,
 };
 
-module.exports = mergeGraphModules(appModule, publicModule);
+module.exports = mergeGraphModules(app, pub, admin);
