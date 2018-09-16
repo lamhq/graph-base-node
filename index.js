@@ -29,6 +29,10 @@ const server = new ApolloServer({
       },
     };
   },
+  formatError: (error) => {
+    logger.error(error.extensions.exception.stacktrace.join('\n'));
+    return error;
+  },
 });
 
 // entry point function
