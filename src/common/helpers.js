@@ -2,9 +2,17 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 const ms = require('ms');
 const mongoose = require('mongoose');
-const config = require('../../config');
 const validate = require('validate.js');
 const querystring = require('querystring');
+const {
+  skip,
+  combineResolvers,
+} = require('graphql-resolvers');
+const {
+  AuthenticationError,
+  ForbiddenError,
+} = require('apollo-server');
+const config = require('../../config');
 
 /**
  * @returns Promise
@@ -157,6 +165,30 @@ function mergeGraphModules(...modules) {
   }), { typeDefs: '', resolvers: {} });
 }
 
+/**
+ * Returns an error in case no user
+ * is available in the provided context.
+ */
+function requireAuthenticated(root, args, { user }) {
+  return user ? skip : new AuthenticationError('Your must be logged to perform this action');
+}
+
+/**
+ * Returns an error in case no user is available in the provided context.
+ * Or user does not have permission
+ *
+ * @param  {String} permission
+ */
+function requirePermission(permission) {
+  const resolver = (root, args, { user: { roles } }) => {
+    if (roles.includes(permission)) {
+      return skip;
+    }
+    return new ForbiddenError('Your are not allowed to perform this action');
+  };
+  return combineResolvers(requireAuthenticated, resolver);
+}
+
 module.exports = {
   connectToDb,
   encryptPassword,
@@ -170,4 +202,5 @@ module.exports = {
   buildQuery,
   getUserFromRequest,
   mergeGraphModules,
+  requirePermission,
 };

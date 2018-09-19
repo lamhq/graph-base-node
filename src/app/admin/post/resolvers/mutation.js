@@ -1,3 +1,5 @@
+const { combineResolvers } = require('graphql-resolvers');
+const { requirePermission } = require('../../../../common/helpers');
 const { UserInputError } = require('apollo-server');
 const { validatePost } = require('../helpers');
 
@@ -46,7 +48,7 @@ async function adminDeletePost(category, { id }, { db }) {
 }
 
 module.exports = {
-  adminAddPost,
-  adminUpdatePost,
-  adminDeletePost,
+  adminAddPost: combineResolvers(requirePermission('admin'), adminAddPost),
+  adminUpdatePost: combineResolvers(requirePermission('admin'), adminUpdatePost),
+  adminDeletePost: combineResolvers(requirePermission('admin'), adminDeletePost),
 };

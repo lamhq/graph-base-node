@@ -1,3 +1,6 @@
+const { combineResolvers } = require('graphql-resolvers');
+const { requirePermission } = require('../../../../common/helpers');
+
 async function adminGetPosts(obj, args, { db }) {
   const posts = await db.models.Post.find().sort({ _id: -1 });
   return posts;
@@ -9,7 +12,7 @@ async function adminGetPost(obj, { id }, { db }) {
 }
 
 module.exports = {
-  adminGetPosts,
-  adminGetPost,
+  adminGetPosts: combineResolvers(requirePermission('admin'), adminGetPosts),
+  adminGetPost: combineResolvers(requirePermission('admin'), adminGetPost),
 };
 

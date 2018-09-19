@@ -3,7 +3,7 @@ const validate = require('validate.js');
 function validatePost(data) {
   const rules = {
     title: {
-      presence: { message: '^Email can\'t be blank', allowEmpty: false },
+      presence: { allowEmpty: false },
     },
     content: {
       presence: { allowEmpty: false },
