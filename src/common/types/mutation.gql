@@ -1,0 +1,3 @@
+extend type Mutation {
+  requestResetPassword(email: String!): Boolean
+}
