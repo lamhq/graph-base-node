@@ -1,3 +1,4 @@
-extend type Mutation {
+type Mutation {
   requestResetPassword(email: String!): Boolean
+  resetPassword(token: String!, password: String!): Boolean
 }
