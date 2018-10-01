@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt-nodejs');
-const ms = require('ms');
 const mongoose = require('mongoose');
+const ms = require('ms');
+const jwt = require('jsonwebtoken');
 const validate = require('validate.js');
 const querystring = require('querystring');
 const {
@@ -27,37 +26,29 @@ function connectToDb() {
   return mongoose.connect(config.db.uri, options);
 }
 
-function encryptPassword(value) {
-  return bcrypt.hashSync(value);
-}
-
-function verifyPassword(value, hash) {
-  return bcrypt.compareSync(value, hash);
-}
-
 /**
- * Create an access token for user
- * @param {Object} user
- * @param {String} duration
+ * Create an jwt token
+ * @param {*} value
+ * @param {string} duration in ms() format
  */
-function createToken(user, duration) {
+function createToken(value, duration) {
   const expireAt = new Date();
   expireAt.setSeconds(expireAt.getSeconds() + (ms(duration) / 1000));
-  const value = jwt.sign({ id: user._id }, config.appSecret, { expiresIn: duration });
+  const token = jwt.sign({ value }, config.appSecret, { expiresIn: duration });
   return {
-    value,
+    value: token,
     expireAt,
   };
 }
 
-function verifyToken(token) {
-  let result = false;
+function decryptToken(token) {
+  let data = false;
   try {
-    result = jwt.verify(token, config.appSecret);
+    data = jwt.verify(token, config.appSecret);
   } catch (err) {
     // logger.info('Validate access token failed.');
   }
-  return result;
+  return data;
 }
 
 async function getUserFromRequest(req, User) {
@@ -71,12 +62,12 @@ async function getUserFromRequest(req, User) {
     return null;
   }
 
-  const { id } = verifyToken(token);
-  if (!id) {
+  const { value } = decryptToken(token);
+  if (!value) {
     return false;
   }
 
-  const user = await User.findById(id);
+  const user = await User.findById(value);
   return user || null;
 }
 
@@ -191,10 +182,8 @@ function requirePermission(permission) {
 
 module.exports = {
   connectToDb,
-  encryptPassword,
-  verifyPassword,
   createToken,
-  verifyToken,
+  decryptToken,
   getObjectValue,
   filterObjectKeys,
   createWebUrl,

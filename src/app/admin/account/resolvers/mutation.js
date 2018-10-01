@@ -1,8 +1,7 @@
 const validate = require('validate.js');
 const { combineResolvers } = require('graphql-resolvers');
-const { requirePermission } = require('../../../../common/helpers');
+const { requirePermission, encryptPassword } = require('../../../../common/helpers');
 const { UserInputError } = require('apollo-server');
-const { encryptPassword } = require('../../../../common/helpers');
 
 /**
  * validate and filter input from profile form

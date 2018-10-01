@@ -34,7 +34,8 @@ const server = new ApolloServer({
     return error;
   },
   formatResponse: (response) => {
-    logger.info(`GraphQL response:\n${JSON.stringify(response, null, 2)}`);
+    console.log('response logging');
+    // logger.info(`GraphQL response:\n${JSON.stringify(response, null, 2)}`);
     return response;
   },
 });
