@@ -180,6 +180,10 @@ function requirePermission(permission) {
   return combineResolvers(requireAuthenticated, resolver);
 }
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 module.exports = {
   connectToDb,
   createToken,
@@ -192,4 +196,5 @@ module.exports = {
   getUserFromRequest,
   mergeGraphModules,
   requirePermission,
+  escapeRegExp,
 };

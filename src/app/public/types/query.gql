@@ -1,5 +1,6 @@
 extend type Query {
-  getPosts: [Post]
+  getPosts(s: String): [Post]
+  getPost(id: ID): Post
   getCategories: [Category]
   getCategory(id: ID): Category
 }

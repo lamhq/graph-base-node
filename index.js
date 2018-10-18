@@ -33,11 +33,11 @@ const server = new ApolloServer({
     logger.error(error.extensions.exception.stacktrace.join('\n'));
     return error;
   },
-  formatResponse: (response) => {
-    console.log('response logging');
-    // logger.info(`GraphQL response:\n${JSON.stringify(response, null, 2)}`);
-    return response;
-  },
+  // formatResponse: (response) => {
+  //   console.log('response logging');
+  //   logger.info(`GraphQL response:\n${JSON.stringify(response, null, 2)}`);
+  //   return response;
+  // },
 });
 
 // entry point function
