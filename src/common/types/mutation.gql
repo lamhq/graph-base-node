@@ -1,4 +1,5 @@
 type Mutation {
+  login(email: String, password: String): AccessToken
   requestResetPassword(email: String!): Boolean
   resetPassword(token: String!, password: String!): Boolean
 }

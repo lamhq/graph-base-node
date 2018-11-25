@@ -11,7 +11,19 @@ const {
 } = require('../helpers');
 const config = require('../../../config');
 
-// send password reset instruction email
+async function login(obj, { email, password }, context) {
+  const user = await context.db.models.User.findOne({ email });
+  if (!user || !user.isPasswordValid(password)) {
+    throw new UserInputError('Incorrect email or password');
+  }
+  const { value, expireAt } = user.createToken(config.accessTokenLifeTime);
+  return {
+    value,
+    expireAt,
+    user,
+  };
+}
+
 function sendMailRequestResetPwd(user) {
   const { appName, mail: { autoEmail } } = config;
   const q = querystring.stringify({
@@ -99,6 +111,7 @@ async function resetPassword(parent, args, { db }) {
 }
 
 module.exports = {
+  login,
   requestResetPassword,
   resetPassword,
 };

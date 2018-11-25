@@ -1,5 +1,4 @@
 "The root Query"
 type Query {
-  getAccessToken(email: String, password: String): AccessToken
   renewAccessToken: AccessToken
 }
