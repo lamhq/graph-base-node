@@ -1,7 +1,38 @@
 const validate = require('validate.js');
-const { combineResolvers } = require('graphql-resolvers');
-const { requirePermission, encryptPassword } = require('../../../../common/helpers');
-const { UserInputError } = require('apollo-server');
+
+function validatePost(data) {
+  const rules = {
+    title: {
+      presence: { allowEmpty: false },
+    },
+    content: {
+      presence: { allowEmpty: false },
+    },
+  };
+
+  return validate(data, rules);
+}
+
+function getQueryData({ q, limit = 4, page = 1 }) {
+  const limit2 = parseInt(limit, 10);
+  const page2 = parseInt(page, 10);
+  const conditions = {};
+
+  // apply text search
+  if (q) {
+    conditions.title = new RegExp(q, 'i');
+    conditions.content = new RegExp(q, 'i');
+  }
+
+  // calculate offset
+  const offset = (page2 - 1) * limit2;
+  return {
+    conditions,
+    limit: limit2,
+    page,
+    offset,
+  };
+}
 
 /**
  * validate and filter input from profile form
@@ -48,23 +79,8 @@ function validateProfileData(data, user) {
   return validate(data, rules);
 }
 
-async function adminUpdateProfile(category, { data }, { user }) {
-  const inputErrors = validateProfileData(data, user);
-  if (inputErrors) {
-    throw new UserInputError('Please correct your inputs', { inputErrors });
-  }
-
-  user.email = data.email;
-  user.username = data.username;
-  user.firstname = data.firstname;
-  user.lastname = data.lastname;
-  if (data.password) {
-    user.password = encryptPassword(data.password);
-  }
-  await user.save();
-  return user;
-}
-
 module.exports = {
-  adminUpdateProfile: combineResolvers(requirePermission('admin'), adminUpdateProfile),
+  validatePost,
+  getQueryData,
+  validateProfileData,
 };

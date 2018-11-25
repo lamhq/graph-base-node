@@ -1,4 +1,6 @@
-extend type User {
+"User schema"
+type User {
+  id: ID
   email: String
   firstname: String
   lastname: String
@@ -9,3 +11,4 @@ extend type User {
   "List of posts posted by this user"
   posts: [Post]
 }
+

@@ -1,4 +1,0 @@
-"The root Query"
-type Query {
-  renewAccessToken: AccessToken
-}

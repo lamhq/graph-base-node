@@ -2,14 +2,14 @@ const { UserInputError } = require('apollo-server');
 const path = require('path');
 const validate = require('validate.js');
 const querystring = require('querystring');
-const logger = require('../log');
-const { sendMail } = require('../mail');
-const {
-  createToken,
-  verifyToken,
-  encryptPassword,
-} = require('../helpers');
-const config = require('../../../config');
+const { combineResolvers } = require('graphql-resolvers');
+
+const config = require('../../config');
+const { requirePermission, encryptPassword } = require('../common/helpers');
+const { createToken, verifyToken } = require('../common/helpers');
+const { sendMail } = require('../common/mail');
+const logger = require('../common/log');
+const { validatePost, validateProfileData } = require('./helpers');
 
 async function login(obj, { email, password }, context) {
   const user = await context.db.models.User.findOne({ email });
@@ -110,8 +110,73 @@ async function resetPassword(parent, args, { db }) {
   return true;
 }
 
+async function adminUpdateProfile(category, args, { user }) {
+  const inputErrors = validateProfileData(args, user);
+  if (inputErrors) {
+    throw new UserInputError('Please correct your inputs', { inputErrors });
+  }
+
+  user.email = args.email;
+  user.username = args.username;
+  user.firstname = args.firstname;
+  user.lastname = args.lastname;
+  if (args.password) {
+    user.password = encryptPassword(args.password);
+  }
+  await user.save();
+  return user;
+}
+
+async function adminAddPost(category, { data }, { db }) {
+  const post = new db.models.Post();
+  const inputErrors = validatePost(data);
+  if (inputErrors) {
+    throw new UserInputError('Please correct your inputs', { inputErrors });
+  }
+
+  post.title = data.title;
+  post.content = data.content;
+  post.categoryId = data.categoryId;
+  post.status = data.status;
+  await post.save();
+  return post;
+}
+
+async function adminUpdatePost(category, { id, data }, { db }) {
+  const post = await db.models.Post.findById(id);
+  if (!post) {
+    throw new UserInputError('Post not found');
+  }
+
+  const inputErrors = validatePost(data);
+  if (inputErrors) {
+    throw new UserInputError('Please correct your inputs', { inputErrors });
+  }
+
+  post.title = data.title;
+  post.content = data.content;
+  post.categoryId = data.categoryId;
+  post.status = data.status;
+  await post.save();
+  return post;
+}
+
+async function adminDeletePost(category, { id }, { db }) {
+  const post = await db.models.Post.findById(id);
+  if (!post) {
+    throw new UserInputError('Post not found');
+  }
+
+  await post.remove();
+  return post;
+}
+
 module.exports = {
   login,
   requestResetPassword,
   resetPassword,
+  adminUpdateProfile: combineResolvers(requirePermission('admin'), adminUpdateProfile),
+  adminAddPost: combineResolvers(requirePermission('admin'), adminAddPost),
+  adminUpdatePost: combineResolvers(requirePermission('admin'), adminUpdatePost),
+  adminDeletePost: combineResolvers(requirePermission('admin'), adminDeletePost),
 };

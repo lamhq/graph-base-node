@@ -1,6 +1,0 @@
-input PostInput {
-  title: String!
-  content: String
-  categoryId: ID
-  status: PostStatus!
-}

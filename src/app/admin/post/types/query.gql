@@ -1,4 +1,0 @@
-extend type Query {
-  adminGetPosts: [Post]
-  adminGetPost(id: ID): Post
-}

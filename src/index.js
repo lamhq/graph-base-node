@@ -1,5 +1,7 @@
-const { mergeGraphModules } = require('./common/helpers');
-const common = require('./common');
-const app = require('./app');
+const typeDefs = require('./types');
+const resolvers = require('./resolvers');
 
-module.exports = mergeGraphModules(common, app);
+module.exports = {
+  typeDefs,
+  resolvers,
+};

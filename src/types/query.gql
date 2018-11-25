@@ -1,0 +1,13 @@
+"The root Query"
+type Query {
+  renewAccessToken: AccessToken
+
+  getPosts(s: String): [Post]
+  getPost(id: ID): Post
+  getCategories: [Category]
+  getCategory(id: ID): Category
+
+  adminGetProfile: User
+  adminGetPosts: [Post]
+  adminGetPost(id: ID): Post
+}
